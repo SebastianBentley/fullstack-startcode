@@ -3,7 +3,7 @@ import dotenv from "dotenv";
 import path from "path"
 dotenv.config()
 import { ApiError } from "./errors/apiError";
-import friendRoutes from "./routes/friendRoutes";
+import friendRoutes from "./routes/friendRoutesAuth";
 import { Request, Response } from "express";
 //import simpleLogger from "./middelware/simpleLogger";
 const app = express();
@@ -13,6 +13,7 @@ app.use(express.json());
 import logger, { stream } from "./middelware/logger";
 const morganFormat = process.env.NODE_ENV == "production" ? "combines" : "dev"
 app.use(require("morgan")(morganFormat, { stream }));
+app.set("logger", logger);
 logger.log("info", "Server started");
 
 const cors = require("cors");
@@ -39,7 +40,7 @@ app.use("/api", (req: Request, res: Response, next) => {
 //Makes JSON error-response for ApiErrors, otherwise pass on to the default error handler
 app.use((err: any, req: Request, res: Response, next: Function) => {
     if (err instanceof (ApiError)) {
-        res.status(err.errorCode).json({ errorCode: 404, msg: err.message })
+        res.status(err.errorCode).json({ errorCode: err.errorCode, msg: err.message })
     } else {
         next(err)
     }

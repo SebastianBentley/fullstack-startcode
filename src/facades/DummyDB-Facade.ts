@@ -1,4 +1,5 @@
-import { IFriend } from '../interfaces/IFriend';
+//OLD FACADE, USE ONLY TO SHOW EXAMPLES OF PROMIESES
+/*import { IFriend } from '../interfaces/IFriend';
 
 
 
@@ -44,4 +45,4 @@ class FriendsFacade {
 }
 
 const facade = new FriendsFacade();
-export default facade;
+export default facade; */

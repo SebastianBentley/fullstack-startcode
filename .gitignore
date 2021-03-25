@@ -1,7 +1,7 @@
 .env
 node_modules
 build
-
+src/utils/makeTestFriends.ts
 # ignore all logs files
 logs/*
 # don't ignore keep files
