@@ -59,7 +59,7 @@ router.put('/editme', async function (req: any, res, next) {
         if (!USE_AUTHENTICATION) {
             throw new ApiError("This endpoint requires authentication", 500)
         }
-        const email = req.credentials.userName 
+        const email = req.credentials.userName
         const result = await facade.editFriend(email, req.body);
         res.json(result);
     } catch (err) {
@@ -119,8 +119,8 @@ router.put('/:email', async function (req: any, res, next) {
         if (USE_AUTHENTICATION && req.credentials.role !== "admin" || !req.credentials.role) {
             throw new ApiError("Not Authorized", 401)
         }
-        
-        const userEmail = req.params.email; 
+
+        const userEmail = req.params.email;
         let newFriend = req.body;
         const result = await facade.editFriend(userEmail, newFriend);
         res.json(result);
@@ -133,5 +133,28 @@ router.put('/:email', async function (req: any, res, next) {
         next(new ApiError(err.message, 400));
     }
 })
+
+
+//An admin user can edit everyone
+router.delete('/delete/:email', async function (req: any, res, next) {
+
+    try {
+        if (USE_AUTHENTICATION && req.credentials.role !== "admin" || !req.credentials.role) {
+            throw new ApiError("Not Authorized", 401)
+        }
+
+        const userEmail = req.params.email;
+        const result = await facade.deleteFriend(userEmail);
+        res.json(result);
+    } catch (err) {
+        debug(err)
+        if (err instanceof ApiError) {
+            return next(err)
+        }
+        next(new ApiError(err.message, 400));
+    }
+})
+
+
 
 export default router

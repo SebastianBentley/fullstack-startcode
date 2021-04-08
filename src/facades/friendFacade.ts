@@ -69,7 +69,8 @@ class FriendsFacade {
      * @returns true if deleted otherwise false
      */
     async deleteFriend(friendEmail: string): Promise<boolean> {
-        if (this.friendCollection.find({ email: friendEmail })) {
+        const friend: IFriend = await this.friendCollection.findOne({ email: friendEmail })
+        if (friend) {
             this.friendCollection.deleteOne({ email: friendEmail });
             return true;
         }
@@ -101,7 +102,7 @@ class FriendsFacade {
      */
     async getVerifiedUser(friendEmail: string, password: string): Promise<IFriend | null> {
         const friend: IFriend = await this.friendCollection.findOne({ email: friendEmail })
-        if (friend && bcrypt.compare(password, friend.password)) {
+        if (friend && await bcrypt.compare(password, friend.password)) {
             return friend
         }
         return Promise.resolve(null)
