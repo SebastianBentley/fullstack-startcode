@@ -1,7 +1,7 @@
 import { makeExecutableSchema } from 'graphql-tools';
 import { resolvers } from './resolvers';
 
-const typeDefs = `
+const typeDefs = `#graphql
 
     type Friend {
         id: ID
@@ -10,6 +10,29 @@ const typeDefs = `
         email: String
         role: String
     }
+
+    type FriendWithPosition {
+        email: String!
+        name: String!
+        location: Point
+    }
+
+    type Coordinate {
+        latitude: Float!
+        longitude: Float!
+   }
+ 
+     type Coordinates {
+       coordinates: [[[Float]]]
+    }
+ 
+    type Point {
+        """Will ALWAYS have the value Point"""
+        type: String
+        """Array with longitude followed by latitude [lon,lat]"""
+        coordinates: [Float]
+    }
+
 
     """
     Queries available for Friends
@@ -51,6 +74,21 @@ const typeDefs = `
         email: String!
     }
 
+    input PositionInput {
+        email: String!
+        longitude: Float!
+        latitude: Float!
+    }
+
+   input NearbyFriendsInput {
+        email: String!
+        password: String
+        longitude: Float!
+        latitude: Float!
+        distance: Float!
+    }
+    
+
     type Mutation {
         """
         Allows anyone (non authenticated users) to create a new friend
@@ -64,6 +102,14 @@ const typeDefs = `
         Allows admin to delete a friend
         """
         deleteFriend(input: FriendEmailInput): Boolean
+        """
+        Add a position to a friend
+        """
+        addPosition(input: PositionInput): Boolean
+        """
+        find nearby friends
+        """
+        findNearbyFriends(input: NearbyFriendsInput):[FriendWithPosition]
        
     }
 `;

@@ -1,12 +1,27 @@
 import FriendFacade from '../facades/friendFacade';
+import PositionFacade from "../facades/positionFacade";
 import { IFriend } from '../interfaces/IFriend';
 import { ApiError } from '../errors/apiError';
 import { Request } from "express";
 import fetch from "node-fetch"
 
+interface IPositionInput {
+    email: string
+    longitude: number
+    latitude: number
+}
+
+interface INearbyFriendInput {
+    email: string
+    password: string
+    longitude: number
+    latitude: number
+    distance: number
+}
 
 
 let friendFacade: FriendFacade;
+let positionFacade: PositionFacade;
 
 /*
 We don't have access to app or the Router so we need to set up the facade in another way
@@ -17,6 +32,9 @@ Just before the line where you start the server
 export function setupFacade(db: any) {
     if (!friendFacade) {
         friendFacade = new FriendFacade(db)
+    }
+    if (!positionFacade) {
+        positionFacade = new PositionFacade(db);
     }
 }
 
@@ -61,6 +79,17 @@ export const resolvers = {
         },
         deleteFriend: async (_: object, { input }: { input: IFriend }) => {
             return friendFacade.deleteFriend(input.email)
+        },
+        addPosition: async (_: object, { input }: { input: IPositionInput }) => {
+            try {
+                await positionFacade.addOrUpdatePosition(input.email, input.longitude, input.latitude);
+                return true;
+            } catch (err) {
+                return false;
+            }
+        },
+        findNearbyFriends: async (_: object, { input }: { input: INearbyFriendInput }) => {
+            return positionFacade.findNearbyFriends(input.email, input.longitude, input.latitude, input.distance, input.password)
         },
     },
 };
